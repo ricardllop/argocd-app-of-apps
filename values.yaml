@@ -1,0 +1,46 @@
+argocd-apps:
+  applications:
+    cert-manager-clusterissuer:
+      namespace: oci-argo-cd
+      project: default
+      source:
+        repoURL: https://github.com/ricardllop/oke-helm-charts.git
+        targetRevision: HEAD
+        path: cert-manager-clusterissuer
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: cert-manager
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
+    ingress-nginx:
+      namespace: oci-argo-cd
+      project: default
+      source:
+        repoURL: https://github.com/ricardllop/oke-helm-charts.git
+        targetRevision: HEAD
+        path: ingress-nginx
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: ingress-nginx-free-oracle-nlb
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
+    rllopsite:
+      namespace: oci-argo-cd
+      project: default
+      source:
+        repoURL: https://github.com/ricardllop/oke-helm-charts.git
+        targetRevision: HEAD
+        path: rllopsite-chart
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: rllopsite
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
