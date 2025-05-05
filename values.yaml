@@ -1,7 +1,7 @@
 argocd-apps:
   applications:
     rllopsite:
-      namespace: oci-argo-cd
+      namespace: argo-cd
       project: default
       source:
         repoURL: https://github.com/ricardllop/oke-helm-charts.git
