@@ -30,20 +30,20 @@ argocd-apps:
           prune: true
           selfHeal: true
     
-    #tailscale-operator:
-    #  namespace: argo-cd
-    #  project: default
-    #  source:
-    #    repoURL: https://github.com/ricardllop/oke-helm-charts.git
-    #    targetRevision: HEAD
-    #    path: tailscale-operator
-    #  destination:
-    #    server: https://kubernetes.default.svc
-    #    namespace: ingress-nginx-free-oracle-nlb
-    #  syncPolicy:
-    #    automated:
-    #      prune: true
-    #      selfHeal: true
+    tailscale-operator:
+      namespace: argo-cd
+      project: default
+      source:
+        repoURL: https://github.com/ricardllop/oke-helm-charts.git
+        targetRevision: HEAD
+        path: tailscale-operator
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: tailscale-operator
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
 
     rllopsite:
       namespace: argo-cd
