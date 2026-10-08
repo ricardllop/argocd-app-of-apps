@@ -15,21 +15,54 @@ argocd-apps:
           prune: true
           selfHeal: true
 
-    ingress-nginx:
+    # Upstream Gateway API CRDs (standard channel). kgateway, cert-manager and the
+    # HTTPRoute of rllopsite all need them.
+    gateway-api-crds:
+      namespace: argo-cd
+      project: default
+      source:
+        repoURL: https://github.com/kubernetes-sigs/gateway-api.git
+        targetRevision: v1.6.1
+        path: config/crd
+      destination:
+        server: https://kubernetes.default.svc
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+
+    kgateway:
+      # With ServerSideApply the default diff does not know the defaults that the
+      # Gateway API CRDs add inside list items (parentRefs group/kind, rule matches,
+      # certificateRefs group), so Gateway and HTTPRoute stay OutOfSync forever
+      additionalAnnotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
       namespace: argo-cd
       project: default
       source:
         repoURL: https://github.com/ricardllop/oke-helm-charts.git
         targetRevision: HEAD
-        path: ingress-nginx
+        path: kgateway
       destination:
         server: https://kubernetes.default.svc
-        namespace: ingress-nginx-free-oracle-nlb
+        namespace: kgateway-system
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
-    
+        syncOptions:
+          - ServerSideApply=true
+        # Gateway, HTTPRoute and Certificate need the CRDs of gateway-api-crds and
+        # cert-manager-clusterissuer, which may not be there yet on a fresh cluster
+        retry:
+          limit: 10
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m
+
     tailscale-operator:
       namespace: argo-cd
       project: default
@@ -59,3 +92,11 @@ argocd-apps:
         automated:
           prune: true
           selfHeal: true
+        # ListenerSet, HTTPRoute and Certificate need the CRDs of gateway-api-crds and
+        # cert-manager-clusterissuer
+        retry:
+          limit: 10
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m
